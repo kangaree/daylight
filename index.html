@@ -3,32 +3,52 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <title>Sunlight</title>
-<script type="text/javascript">/*<![CDATA[*/
-// TODO automate getting this data somehow
-
-// http://aa.usno.navy.mil/data/docs/RS_OneDay.php
-
-// Convert hours/minutes into minutes (60*hrs+minutes)
-//   civil twilight 0453 -> 293
-//   sunrise        0526 -> 326
-//   sunset         2027 -> 1227
-//   end twilight   2100 -> 1260
+<script src="suncalc.js"></script>
+<script type="text/javascript">
 
 function init() {
+    // Coordinates of New York City
+    const latitude = 40.7128; // NYC Latitude
+    const longitude = -74.0060; // NYC Longitude
+
+    // TODO: grab lat and longitude using an API! Or Geolocation
+
+    // Date for which you want to calculate the times (current date)
+    const date = new Date();
+
+    // Get the solar position for NYC
+    const sunPosition = SunCalc.getPosition(date, latitude, longitude);
+
+    // Get the times (twilight, sunrise, sunset, nightfall) for NYC
+    const times = SunCalc.getTimes(date, latitude, longitude);
+
+    // Function to format time to HH:MM format
+    function formatTime(time) {
+        return 60 * time.getHours() + time.getMinutes();
+    }
+
+    // Print the results
+    // console.log("Nightfall DAWN:", formatTime(times.dawn));
+    // console.log("Sunrise SUNRISE:", formatTime(times.sunrise));
+    // console.log("Sunset SUNSET:", formatTime(times.sunset));
+    // console.log("Twilight DUSK:", formatTime(times.dusk));
+    
+    
     const vis = document.getElementById('vis');
     vis.width = window.innerWidth;
     vis.height = window.innerHeight;
-
+    
     const WIDTH = vis.clientWidth;
     const HEIGHT = vis.clientHeight;
     const d = new Date();
-
+    
     const TOTAL_MINUTES = 1440;
-    const twilight = 293;
-    const sunrise = 326;
-    const sunset = 1227;
-    const nightfall = 1260;
-    const CURRENT_TIME = 60 * d.getHours() + d.getMinutes();
+    const twilight = formatTime(times.dawn);
+    const sunrise = formatTime(times.sunrise);
+    const sunset = formatTime(times.sunset);
+    const nightfall = formatTime(times.dusk);
+    const CURRENT_TIME = formatTime(d);
+
 
     const context = vis.getContext('2d');
     context.fillStyle = "rgb(0,0,0)";
